@@ -21,11 +21,15 @@ interface TmdbApiService
 
     //example: https://api.themoviedb.org/3/discover/movie?api_key=1e0dcaa7e93980fb84e1d2430d01b887&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=1
     //example: https://api.themoviedb.org/3/discover/movie?api_key=1e0dcaa7e93980fb84e1d2430d01b887&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&primary_release_date.lte=2013-08-30
-    @GET("discover/movie?api_key={api_key}&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page={page}&primary_release_date.lte={date}\n")
+    @GET("discover/movie\n")
     fun getLatestMovies(
-        @Path("api_key") apiKey: String,
-        @Path("date") releaseDateMax: String,
-        @Path("page") pageNumber: Int
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String, //en-US
+        @Query("sort_by") sortBy: String, //release_date.desc
+        @Query("include_adult") includeAdult: String, //false
+        @Query("include_video") includeVideo: String, //false
+        @Query("page") pageNumber: Int, //1
+        @Query("primary_release_date.lte") releaseDateMax: String //2013-08-30
     ): Single<DiscoverMoviesModel>
 
     //example: https://api.themoviedb.org/3/discover/movie?api_key=1e0dcaa7e93980fb84e1d2430d01b887&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&primary_release_date.lte=2013-08-30

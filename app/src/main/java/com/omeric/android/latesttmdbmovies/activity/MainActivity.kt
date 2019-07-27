@@ -20,6 +20,8 @@ import android.widget.Toast
 import com.omeric.android.latesttmdbmovies.R
 import com.omeric.android.latesttmdbmovies.adapter.MoviesAdapter
 import com.omeric.android.latesttmdbmovies.data.model.DiscoverMoviesModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity()
@@ -60,9 +62,18 @@ class MainActivity : AppCompatActivity()
 
         // create an instance of the TmdbApiService
         val tmdbApiService = retrofit.create(TmdbApiService::class.java)
+        val time = Calendar.getInstance().time
+        Log.d(TAG, ":onCreate:: Current time => $time")
+
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val formattedDate = simpleDateFormat.format(time)
+        Log.d(TAG, ":onCreate:: formattedDate = $formattedDate")
 
         //TODO - change to simpler form of function
         //example: https://api.themoviedb.org/3/discover/movie?api_key=1e0dcaa7e93980fb84e1d2430d01b887&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&primary_release_date.lte=2013-08-30
+        tmdbApiService.getLatestMovies(API_KEY, "en-US", "release_date.desc", "false",
+            "false", 1, formattedDate)
+/*
         tmdbApiService.getMoviesFromDiscover(mapOf(
             "api_key" to API_KEY,
             "language" to "en-US",
@@ -71,6 +82,7 @@ class MainActivity : AppCompatActivity()
             "include_video" to "false.desc",
             "page" to "1",
             "primary_release_date.lte" to "2013-08-30"))
+*/
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(object : SingleObserver<DiscoverMoviesModel>

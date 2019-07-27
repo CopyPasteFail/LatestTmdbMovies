@@ -51,27 +51,20 @@ class MoviesAdapter(
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int)
     {
         Log.d(TAG,"onBindViewHolder:")
-        val posterUrl = MainActivity.BASE_URL_MOVIE_POSTER + movies[position].posterPath //TODO - conver poster path to full url
-        Log.d(TAG,"onBindViewHolder: posterUrl = $posterUrl")
-        Picasso
-            .get()
-            .load(posterUrl)
-            .placeholder(android.R.drawable.sym_def_app_icon)
-            .error(android.R.drawable.stat_notify_error)
-            .into(holder.posterImage)
-/*
-            .into(holder.posterImage, object: Callback {
-                override fun onSuccess() {
-                }
-
-                override fun onError(Exception e) {
-                }
-            })
-*/
+        if (movies[position].posterPath != null)
+        {
+            val posterUrl = MainActivity.BASE_URL_MOVIE_POSTER + movies[position].posterPath
+            Log.d(TAG, "onBindViewHolder: posterUrl = $posterUrl")
+            Picasso
+                .get()
+                .load(posterUrl)
+                .placeholder(android.R.drawable.sym_def_app_icon)
+                .error(android.R.drawable.stat_notify_error)
+                .into(holder.posterImage)
+        }
+        else {holder.posterImage.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)}
         holder.movieTitle.text = movies[position].originalTitle
         holder.releaseDate.text = movies[position].releaseDate
-//        holder.stars.text = movies[position].stargazersCount.toString()
-//        holder.forks.text = movies[position].forksCount.toString()
 
         holder.movieItemLayout.setOnClickListener {
             context.startActivity(Intent(context, DetailsActivity::class.java)
