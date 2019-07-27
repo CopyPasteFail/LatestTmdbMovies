@@ -10,5 +10,5 @@ class SearchRepositoriesModel
     var totalCount: Int? = null
     @SerializedName("items")
     @Expose
-    var items: List<RepositoryModel>? = null
+    var items: List<MovieModel>? = null
 }

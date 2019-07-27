@@ -10,7 +10,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.omeric.android.latesttmdbmovies.R
-import com.omeric.android.latesttmdbmovies.data.model.RepositoryModel
+import com.omeric.android.latesttmdbmovies.data.model.MovieModel
 import com.omeric.android.latesttmdbmovies.data.remote.TmdbApiService
 import com.squareup.picasso.Picasso
 import io.reactivex.SingleObserver
@@ -99,7 +99,7 @@ class DetailsActivity : AppCompatActivity()
             * and is passed to us in onSuccess() method if request was successfully completed 
             *  if not, onError() is invoked, enabling us to deal with the exception as we see fit
             */
-            .subscribe(object : SingleObserver<RepositoryModel>
+            .subscribe(object : SingleObserver<MovieModel>
             {
                 /**
                  * Called in the moment of subscription and it can serve us to prevent potential memory leaks.
@@ -118,25 +118,25 @@ class DetailsActivity : AppCompatActivity()
                     compositeDisposable?.add(disposable)
                 }
 
-                override fun onSuccess(repository: RepositoryModel)
+                override fun onSuccess(movie: MovieModel)
                 {
                     // data is ready and we can update the UI
-                    Log.d(TAG, "repositorySingle::onSuccess: repository name: ${repository.name}")
+                    Log.d(TAG, "repositorySingle::onSuccess: repository name: ${movie.name}")
 
-                    repositoryTitle.text = repository.name
-                    repositoryDescription.text = repository.description
-                    stars.text = repository.stargazersCount.toString()
-                    forks.text = repository.forksCount.toString()
-                    watchers.text = repository.subscribersCount.toString()
-                    openIssues.text = repository.openIssues.toString()
-                    htmlUrl.text = repository.htmlUrl
+                    repositoryTitle.text = movie.name
+                    repositoryDescription.text = movie.description
+                    stars.text = movie.stargazersCount.toString()
+                    forks.text = movie.forksCount.toString()
+                    watchers.text = movie.subscribersCount.toString()
+                    openIssues.text = movie.openIssues.toString()
+                    htmlUrl.text = movie.htmlUrl
                     usernameTextView.text = username
-                    val repoCreatedTime = "Created at ${repository.createdAt?.removeSuffix("Z")?.replace("T", " ")}"
-                    val repoUpdatedTime = "Updated at ${repository.updatedAt?.removeSuffix("Z")?.replace("T", " ")}"
+                    val repoCreatedTime = "Created at ${movie.createdAt?.removeSuffix("Z")?.replace("T", " ")}"
+                    val repoUpdatedTime = "Updated at ${movie.updatedAt?.removeSuffix("Z")?.replace("T", " ")}"
                     creationTime.text = repoCreatedTime
                     updatedTime.text = repoUpdatedTime
 
-                    val avatarUrl = repository.owner?.avatarUrl
+                    val avatarUrl = movie.owner?.avatarUrl
                     Picasso
                         .get()
                         .load(avatarUrl)

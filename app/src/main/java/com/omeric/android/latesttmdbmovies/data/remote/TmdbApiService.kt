@@ -1,6 +1,6 @@
 package com.omeric.android.latesttmdbmovies.data.remote
 
-import com.omeric.android.latesttmdbmovies.data.model.RepositoryModel
+import com.omeric.android.latesttmdbmovies.data.model.MovieModel
 import com.omeric.android.latesttmdbmovies.data.model.SearchRepositoriesModel
 import io.reactivex.Single
 import retrofit2.http.*
@@ -18,13 +18,13 @@ interface TmdbApiService
     fun getMovieDetails(
         @Path("user") user: String,
         @Path("repoName") repoName: String
-    ): Single<RepositoryModel>
+    ): Single<MovieModel>
 
     //example: "https://api.themoviedb.org/3/movie/latest?language=en-US&api_key=1e0dcaa7e93980fb84e1d2430d01b887"
     @GET("users/{user}/repos")
     fun getLatestMovies(
         @Path("user") user: String
-    ): Single<List<RepositoryModel>>
+    ): Single<List<MovieModel>>
 
     //example: https://api.github.com/search/repositories?q=topic:android&sort=stars&order=desc
     @GET("search/repositories")

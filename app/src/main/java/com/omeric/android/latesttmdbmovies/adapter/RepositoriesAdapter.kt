@@ -10,14 +10,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.omeric.android.latesttmdbmovies.R
-import com.omeric.android.latesttmdbmovies.data.model.RepositoryModel
+import com.omeric.android.latesttmdbmovies.data.model.MovieModel
 import com.squareup.picasso.Picasso
 import android.content.Intent
 import com.omeric.android.latesttmdbmovies.activity.DetailsActivity
 
 
 class RepositoriesAdapter(
-    private val repositories: List<RepositoryModel>,
+    private val movies: List<MovieModel>,
     private val rowLayout: Int,
     private val context: Context
 ) : RecyclerView.Adapter<RepositoriesAdapter.RepositoryViewHolder>()
@@ -49,28 +49,28 @@ class RepositoriesAdapter(
     override fun onBindViewHolder(holder: RepositoryViewHolder, position: Int)
     {
         Log.d(TAG,"onBindViewHolder:")
-        val avatarUrl = repositories[position].owner?.avatarUrl
+        val avatarUrl = movies[position].owner?.avatarUrl
         Picasso
             .get()
             .load(avatarUrl)
             .placeholder(android.R.drawable.sym_def_app_icon)
             .error(android.R.drawable.sym_def_app_icon)
             .into(holder.avatarImage)
-        holder.repositoryTitle.text = repositories[position].name
-        holder.repositoryDescription.text = repositories[position].description
-        holder.stars.text = repositories[position].stargazersCount.toString()
-        holder.forks.text = repositories[position].forksCount.toString()
+        holder.repositoryTitle.text = movies[position].name
+        holder.repositoryDescription.text = movies[position].description
+        holder.stars.text = movies[position].stargazersCount.toString()
+        holder.forks.text = movies[position].forksCount.toString()
 
         holder.repositoryItemLayout.setOnClickListener {
             context.startActivity(Intent(context, DetailsActivity::class.java)
-                .putExtra(DetailsActivity.INTENT_USERNAME_ID, repositories[position].owner?.login)
-                .putExtra(DetailsActivity.INTENT_REPOSITORY_NAME_ID, repositories[position].name)
+                .putExtra(DetailsActivity.INTENT_USERNAME_ID, movies[position].owner?.login)
+                .putExtra(DetailsActivity.INTENT_REPOSITORY_NAME_ID, movies[position].name)
             )
         }
     }
 
     override fun getItemCount(): Int
     {
-        return repositories.size
+        return movies.size
     }
 }
