@@ -27,7 +27,9 @@ class MainActivity : AppCompatActivity()
     companion object
     {
         private val TAG = "gipsy:" + this::class.java.name
-        const val BASE_URL = "https://api.github.com/"
+//        const val BASE_URL = "https://api.github.com/"
+        const val BASE_URL = "https://api.themoviedb.org/3/"
+        const val API_KEY = "1e0dcaa7e93980fb84e1d2430d01b887" //junk key
     }
 
     /**

@@ -12,19 +12,24 @@ import retrofit2.http.*
  */
 interface TmdbApiService
 {
-    //example: https://api.github.com/repos/BracketCove/SpaceNotes
-    //example: "https://api.themoviedb.org/3/movie/299536?api_key=cc37499b567edef6d7fad0608ea992c5&language=en-US"
-    @GET("repos/{user}/{repoName}")
+    //example: https://api.themoviedb.org/3/movie/299536?api_key=1e0dcaa7e93980fb84e1d2430d01b887&language=en-US
+    @GET("movie/{id}?api_key={apiKey}&language=en-US")
     fun getMovieDetails(
-        @Path("user") user: String,
-        @Path("repoName") repoName: String
+        @Path("id") user: String,
+        @Path("apiKey") apiKey: String
     ): Single<MovieModel>
 
-    //example: "https://api.themoviedb.org/3/movie/latest?language=en-US&api_key=1e0dcaa7e93980fb84e1d2430d01b887"
-    @GET("users/{user}/repos")
+    //example: https://api.themoviedb.org/3/discover/movie?api_key=1e0dcaa7e93980fb84e1d2430d01b887&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=1
+    @GET("discover/movie?api_key={apiKey}&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=1\n")
     fun getLatestMovies(
-        @Path("user") user: String
+        @Path("apiKey") apiKey: String
     ): Single<List<MovieModel>>
+
+    //example: "https://api.themoviedb.org/3/movie/latest?language=en-US&api_key=1e0dcaa7e93980fb84e1d2430d01b887"
+    @GET("movie/latest?language=en-US&api_key={apiKey}")
+    fun getLatestMovie(
+        @Path("apiKey") apiKey: String
+    ): Single<MovieModel>
 
     //example: https://api.github.com/search/repositories?q=topic:android&sort=stars&order=desc
     @GET("search/repositories")
