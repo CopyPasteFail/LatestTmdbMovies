@@ -18,8 +18,8 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import com.omeric.android.latesttmdbmovies.R
-import com.omeric.android.latesttmdbmovies.adapter.RepositoriesAdapter
-import com.omeric.android.latesttmdbmovies.data.model.SearchRepositoriesModel
+import com.omeric.android.latesttmdbmovies.adapter.MoviesAdapter
+import com.omeric.android.latesttmdbmovies.data.model.DiscoverMoviesModel
 
 
 class MainActivity : AppCompatActivity()
@@ -27,8 +27,9 @@ class MainActivity : AppCompatActivity()
     companion object
     {
         private val TAG = "gipsy:" + this::class.java.name
-//        const val BASE_URL = "https://api.github.com/"
-        const val BASE_URL = "https://api.themoviedb.org/3/"
+//        const val BASE_URL_API = "https://api.github.com/"
+        const val BASE_URL_API = "https://api.themoviedb.org/3/"
+        const val BASE_URL_MOVIE_POSTER = "https://image.tmdb.org/t/p/w185"
         const val API_KEY = "1e0dcaa7e93980fb84e1d2430d01b887" //junk key
     }
 
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity()
 
         // Trailing slash is needed
         val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BASE_URL_API)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
@@ -60,34 +61,40 @@ class MainActivity : AppCompatActivity()
         // create an instance of the TmdbApiService
         val tmdbApiService = retrofit.create(TmdbApiService::class.java)
 
-        //TODO - change to latest movies
-        //https://api.github.com/search/repositories?q=topic:android&sort=stars&order=desc&per_page=5
-        tmdbApiService.getRepositoriesFromSearch(mapOf("q" to "topic:android", "sort" to "stars"
-            , "order" to "desc", "per_page" to "10"))
+        //TODO - change to simpler form of function
+        //example: https://api.themoviedb.org/3/discover/movie?api_key=1e0dcaa7e93980fb84e1d2430d01b887&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&primary_release_date.lte=2013-08-30
+        tmdbApiService.getMoviesFromDiscover(mapOf(
+            "api_key" to API_KEY,
+            "language" to "en-US",
+            "include_adult" to "false",
+            "sort_by" to "release_date.desc",
+            "include_video" to "false.desc",
+            "page" to "1",
+            "primary_release_date.lte" to "2013-08-30"))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : SingleObserver<SearchRepositoriesModel>
+            .subscribe(object : SingleObserver<DiscoverMoviesModel>
             {
                 override fun onSubscribe(disposable: Disposable)
                 {
-                    Log.d(TAG, "repositoriesSingle::onSubscribe")
+                    Log.d(TAG, "moviesSingle::onSubscribe")
                     add(disposable)
                     showProgressBar()
                 }
 
-                override fun onSuccess(repositories : SearchRepositoriesModel)
+                override fun onSuccess(movies : DiscoverMoviesModel)
                 {
                     // data is ready and we can update the UI
-                    Log.d(TAG, "repositoriesSingle::onSuccess: Number of repositories received:  ${repositories.totalCount}")
-                    recyclerView.adapter = RepositoriesAdapter(repositories.items!!, R.layout.list_item_movie, applicationContext)
+                    Log.d(TAG, "moviesSingle::onSuccess: Number of movies received:  ${movies.totalResults}")
+                    recyclerView.adapter = MoviesAdapter(movies.results!!, R.layout.list_item_movie, applicationContext)
                     hideProgressBar()
                 }
 
                 override fun onError(e: Throwable)
                 {
                     // oops, we best show some error message
-                    Log.e(TAG, "repositoriesSingle::onError: $e")
-                    Toast.makeText(this@MainActivity, "Error connecting to GitHub", Toast.LENGTH_SHORT).show()
+                    Log.e(TAG, "moviesSingle::onError: $e")
+                    Toast.makeText(this@MainActivity, "Error connecting to TMDb", Toast.LENGTH_SHORT).show()
                     hideProgressBar()
                 }
             })

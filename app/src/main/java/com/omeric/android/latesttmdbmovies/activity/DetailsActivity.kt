@@ -31,7 +31,7 @@ class DetailsActivity : AppCompatActivity()
     companion object
     {
         private val TAG = "gipsy:" + this::class.java.name
-        const val INTENT_USERNAME_ID = "USERNAME_ID"
+        const val INTENT_MOVIE_ID = "USERNAME_ID"
         const val INTENT_REPOSITORY_NAME_ID = "REPOSITORY_NAME_ID"
     }
 
@@ -44,35 +44,34 @@ class DetailsActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
         Log.d(TAG, ":onCreate")
-        val username = intent.getStringExtra(INTENT_USERNAME_ID)
-        val repositoryName = intent.getStringExtra(INTENT_REPOSITORY_NAME_ID)
-        Log.d(TAG, ":onCreate: GET /repos/$username/$repositoryName")
+        val movieId = intent.getStringExtra(INTENT_MOVIE_ID)
+        Log.d(TAG, ":onCreate: GET /movie/$movieId/") //TODO - change this
 
-        val repositoryTitle: TextView = findViewById(R.id.TextVw_repo_details_title)
-        val repositoryDescription: TextView = findViewById(R.id.TextVw_repo_details_description)
-        val stars: TextView = findViewById(R.id.TextVw_repo_details_stars)
-        val forks: TextView = findViewById(R.id.TextVw_repo_details_forks)
-        val watchers: TextView = findViewById(R.id.TextVw_repo_details_watchers)
-        val openIssues: TextView = findViewById(R.id.TextVw_repo_details_open_issues)
-        val avatarImage: ImageView = findViewById(R.id.ImgVw_repo_details_avatar_image)
-        val htmlUrl: TextView = findViewById(R.id.TextVw_repo_details_link)
-        val usernameTextView: TextView = findViewById(R.id.TextVw_repo_details_username)
-        val creationTime: TextView = findViewById(R.id.TextVw_repo_details_creation_time)
-        val updatedTime: TextView = findViewById(R.id.TextVw_repo_details_updated_time)
+        val movieTitle: TextView = findViewById(R.id.TextVw_movie_details_title)
+        val movieOverview: TextView = findViewById(R.id.TextVw_movie_details_overview)
+        val popularity: TextView = findViewById(R.id.TextVw_movie_details_popularity)
+        val voteAverage: TextView = findViewById(R.id.TextVw_movie_details_vote_average)
+        val voteCount: TextView = findViewById(R.id.TextVw_movie_details_vote_count)
+//        val openIssues: TextView = findViewById(R.id.TextVw_repo_details_open_issues)
+        val posterImage: ImageView = findViewById(R.id.ImgVw_movie_details_poster_image)
+        val homepageUrl: TextView = findViewById(R.id.TextVw_movie_homepage_url)
+//        val usernameTextView: TextView = findViewById(R.id.TextVw_repo_details_username)
+        val releaseDate: TextView = findViewById(R.id.TextVw_movie_details_release_date)
+//        val updatedTime: TextView = findViewById(R.id.TextVw_repo_details_updated_time)
 
-        progressBar = findViewById(R.id.progressbar_repo_details)
-        detailsLayout = findViewById(R.id.repo_details_layout)
+        progressBar = findViewById(R.id.progressbar_movie_details)
+        detailsLayout = findViewById(R.id.movie_details_layout)
 
         // Trailing slash is needed
         val retrofit = Retrofit.Builder()
-            .baseUrl(MainActivity.BASE_URL)
+            .baseUrl(MainActivity.BASE_URL_API)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
 
 
         // create an instance of the TmdbApiService
-        val gitHubApiService = retrofit.create(TmdbApiService::class.java)
+        val tmtbApiService = retrofit.create(TmdbApiService::class.java)
 
         // make a request by calling the corresponding method
         /*
@@ -83,7 +82,7 @@ class DetailsActivity : AppCompatActivity()
          */
 
         //https://api.github.com/repos/:owner/:repo
-        gitHubApiService.getMovieDetails(username, repositoryName)
+        tmtbApiService.getMovieDetails(movieId, MainActivity.API_KEY)
             /*
              * With subscribeOn() we tell RxJava to do all the work on the background(io) thread.
              * When the work is done and our data is ready, observeOn() ensures that onSuccess() or onError()
@@ -91,6 +90,7 @@ class DetailsActivity : AppCompatActivity()
              */
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+
             /*
             * To receive the data we only have to subscribe to a Single,
             * calling the subscribe() method on it and passing a SingleObserver as an argument.
@@ -110,7 +110,7 @@ class DetailsActivity : AppCompatActivity()
                  */
                 override fun onSubscribe(disposable: Disposable)
                 {
-                    Log.d(DetailsActivity.TAG, "repositorySingle::onSubscribe")
+                    Log.d(DetailsActivity.TAG, "movieSingle::onSubscribe")
                     if (compositeDisposable == null)
                     {
                         compositeDisposable = CompositeDisposable()
@@ -121,28 +121,28 @@ class DetailsActivity : AppCompatActivity()
                 override fun onSuccess(movie: MovieModel)
                 {
                     // data is ready and we can update the UI
-                    Log.d(TAG, "repositorySingle::onSuccess: repository name: ${movie.name}")
+                    Log.d(TAG, "repositorySingle::onSuccess: movie name: ${movie.originalTitle}")
 
-                    repositoryTitle.text = movie.name
-                    repositoryDescription.text = movie.description
-                    stars.text = movie.stargazersCount.toString()
-                    forks.text = movie.forksCount.toString()
-                    watchers.text = movie.subscribersCount.toString()
-                    openIssues.text = movie.openIssues.toString()
-                    htmlUrl.text = movie.htmlUrl
-                    usernameTextView.text = username
-                    val repoCreatedTime = "Created at ${movie.createdAt?.removeSuffix("Z")?.replace("T", " ")}"
-                    val repoUpdatedTime = "Updated at ${movie.updatedAt?.removeSuffix("Z")?.replace("T", " ")}"
-                    creationTime.text = repoCreatedTime
-                    updatedTime.text = repoUpdatedTime
+                    movieTitle.text = movie.originalTitle
+                    movieOverview.text = movie.overview
+                    popularity.text = movie.popularity.toString()
+                    voteAverage.text = movie.voteAverage.toString()
+                    voteCount.text = movie.voteCount.toString()
+//                    openIssues.text = movie.openIssues.toString()
+                    homepageUrl.text = movie.homePageUrl
+//                    usernameTextView.text = movieId
+                    val movieReleaseDate = "Created at ${movie.releaseDate?.removeSuffix("Z")?.replace("T", " ")}"
+//                    val repoUpdatedTime = "Updated at ${movie.updatedAt?.removeSuffix("Z")?.replace("T", " ")}"
+                    releaseDate.text = movieReleaseDate
+//                    updatedTime.text = repoUpdatedTime
 
-                    val avatarUrl = movie.owner?.avatarUrl
+                    val posterPath = movie.posterPath
                     Picasso
                         .get()
-                        .load(avatarUrl)
+                        .load(posterPath)
                         .placeholder(android.R.drawable.sym_def_app_icon)
                         .error(android.R.drawable.sym_def_app_icon)
-                        .into(avatarImage)
+                        .into(posterImage)
                     hideProgressBar()
                 }
 

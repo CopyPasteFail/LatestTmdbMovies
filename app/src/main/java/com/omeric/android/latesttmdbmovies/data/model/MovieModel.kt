@@ -18,7 +18,7 @@ class MovieModel
 */
     @SerializedName("homepage")
     @Expose
-    var homePage: String? = null
+    var homePageUrl: String? = null
 
     @SerializedName("id")
     @Expose
