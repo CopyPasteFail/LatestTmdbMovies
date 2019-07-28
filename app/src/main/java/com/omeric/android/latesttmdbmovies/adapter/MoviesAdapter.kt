@@ -20,8 +20,8 @@ import com.squareup.picasso.Callback
 
 class MoviesAdapter(
     private val movies: List<MovieModel>,
-    private val rowLayout: Int,
-    private val context: Context
+    private val rowLayout: Int
+//    private val context: Context
 ) : RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>()
 {
     companion object
@@ -29,19 +29,18 @@ class MoviesAdapter(
         private val TAG = "gipsy:" + this::class.java.name
     }
 
-    //A view holder inner class where we get reference to the views in the layout using their ID
+    /**
+     * A [RecyclerView.ViewHolder] inner class where we get reference to the views in the layout using their ID
+     */
     class MovieViewHolder(view: View) : RecyclerView.ViewHolder(view)
     {
         internal var movieItemLayout: ConstraintLayout = view.findViewById(R.id.movie_item_layout)
         internal var movieTitle: TextView = view.findViewById(R.id.title_list_item)
-        //            data = (TextView) view.findViewById(R.id.date);
-//        internal var movieOverview: TextView = view.findViewById(R.id.overview_list_item)
-//        internal var stars: TextView = view.findViewById(R.id.stars_list_item)
         internal var releaseDate: TextView = view.findViewById(R.id.TextVw_release_date_list_item)
         internal var posterImage: ImageView = view.findViewById(R.id.poster_image_list_item)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoviesAdapter.MovieViewHolder
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder
     {
         Log.d(TAG,"onCreateViewHolder:")
         val view = LayoutInflater.from(parent.context).inflate(rowLayout, parent, false)
@@ -53,11 +52,10 @@ class MoviesAdapter(
         Log.d(TAG,"onBindViewHolder:")
         if (movies[position].posterPath != null)
         {
-            val posterUrl = MainActivity.BASE_URL_MOVIE_POSTER + movies[position].posterPath
-            Log.d(TAG, "onBindViewHolder: posterUrl = $posterUrl")
+            Log.d(TAG, "onBindViewHolder: posterUrl = ${MainActivity.BASE_URL_MOVIE_POSTER + movies[position].posterPath}")
             Picasso
                 .get()
-                .load(posterUrl)
+                .load(MainActivity.BASE_URL_MOVIE_POSTER + movies[position].posterPath)
                 .placeholder(android.R.drawable.sym_def_app_icon)
                 .error(android.R.drawable.stat_notify_error)
                 .into(holder.posterImage)
@@ -67,9 +65,16 @@ class MoviesAdapter(
         holder.releaseDate.text = movies[position].releaseDate
 
         holder.movieItemLayout.setOnClickListener {
-            context.startActivity(Intent(context, DetailsActivity::class.java)
+            it.context.startActivity(Intent(it.context, DetailsActivity::class.java)
+                .putExtra(DetailsActivity.INTENT_MOVIE_HOMEPAGE_URL, movies[position].homePageUrl)
                 .putExtra(DetailsActivity.INTENT_MOVIE_ID, movies[position].id)
-//                .putExtra(DetailsActivity.INTENT_REPOSITORY_NAME_ID, movies[position].name)
+                .putExtra(DetailsActivity.INTENT_MOVIE_TITLE, movies[position].originalTitle)
+                .putExtra(DetailsActivity.INTENT_MOVIE_OVERVIEW, movies[position].overview)
+                .putExtra(DetailsActivity.INTENT_MOVIE_POPULARITY, movies[position].popularity)
+                .putExtra(DetailsActivity.INTENT_MOVIE_POSTER_PATH, movies[position].posterPath)
+                .putExtra(DetailsActivity.INTENT_MOVIE_RELEASE_DATE, movies[position].releaseDate)
+                .putExtra(DetailsActivity.INTENT_MOVIE_VOTE_AVERAGE, movies[position].voteAverage)
+                .putExtra(DetailsActivity.INTENT_MOVIE_VOTE_COUNT, movies[position].voteCount)
             )
         }
     }

@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity()
                 {
                     // data is ready and we can update the UI
                     Log.d(TAG, "moviesSingle::onSuccess: Number of movies received:  ${movies.totalResults}")
-                    recyclerView.adapter = MoviesAdapter(movies.results!!, R.layout.list_item_movie, applicationContext)
+                    recyclerView.adapter = MoviesAdapter(movies.results!!, R.layout.list_item_movie)
                     hideProgressBar()
                 }
 
