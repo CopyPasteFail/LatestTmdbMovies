@@ -6,23 +6,9 @@ import android.support.constraint.ConstraintLayout
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import com.omeric.android.latesttmdbmovies.R
-import com.omeric.android.latesttmdbmovies.adapter.MoviesAdapter
-import com.omeric.android.latesttmdbmovies.data.model.MovieModel
-import com.omeric.android.latesttmdbmovies.data.remote.TmdbApiService
 import com.squareup.picasso.Picasso
-import io.reactivex.SingleObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import io.reactivex.disposables.CompositeDisposable
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 
 /**
  * This activity shows the details of the movie when the user clicks on it from the main activity
@@ -64,7 +50,7 @@ class DetailsActivity : AppCompatActivity()
         detailsLayout = findViewById(R.id.movie_details_layout)
 
         if (intent.getStringExtra(INTENT_MOVIE_HOMEPAGE_URL) == null)
-            {findViewById<ImageView>(R.id.link_image).visibility = View.INVISIBLE}
+            {findViewById<ImageView>(R.id.ImgVw_movie_details_link).visibility = View.INVISIBLE}
         else {homepageUrl.text = intent.getStringExtra(INTENT_MOVIE_HOMEPAGE_URL)}
         movieTitle.text = intent.getStringExtra(INTENT_MOVIE_TITLE)
         movieOverview.text = intent.getStringExtra(INTENT_MOVIE_OVERVIEW)

@@ -21,7 +21,6 @@ import com.squareup.picasso.Callback
 class MoviesAdapter(
     private val movies: List<MovieModel>,
     private val rowLayout: Int
-//    private val context: Context
 ) : RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>()
 {
     companion object
@@ -47,6 +46,9 @@ class MoviesAdapter(
         return MovieViewHolder(view)
     }
 
+    /**
+     * Inside the [onBindViewHolder] we check the type of ViewHolder instance and populate the row accordingly
+     */
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int)
     {
         Log.d(TAG,"onBindViewHolder:")

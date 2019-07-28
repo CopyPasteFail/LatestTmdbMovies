@@ -29,11 +29,13 @@ class MainActivity : AppCompatActivity()
     companion object
     {
         private val TAG = "gipsy:" + this::class.java.name
-//        const val BASE_URL_API = "https://api.github.com/"
         const val BASE_URL_API = "https://api.themoviedb.org/3/"
         const val BASE_URL_MOVIE_POSTER = "https://image.tmdb.org/t/p/w185"
         const val API_KEY = "1e0dcaa7e93980fb84e1d2430d01b887" //junk key
     }
+
+    //TODO - add auto-complete search bar
+    //TODO - add infinite scrolling
 
     /**
      * [CompositeDisposable] is a convenient class for bundling up multiple Disposables,
@@ -69,20 +71,9 @@ class MainActivity : AppCompatActivity()
         val formattedDate = simpleDateFormat.format(time)
         Log.d(TAG, ":onCreate:: formattedDate = $formattedDate")
 
-        //TODO - change to simpler form of function
         //example: https://api.themoviedb.org/3/discover/movie?api_key=1e0dcaa7e93980fb84e1d2430d01b887&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&primary_release_date.lte=2013-08-30
         tmdbApiService.getLatestMovies(API_KEY, "en-US", "release_date.desc", "false",
             "false", 1, formattedDate)
-/*
-        tmdbApiService.getMoviesFromDiscover(mapOf(
-            "api_key" to API_KEY,
-            "language" to "en-US",
-            "include_adult" to "false",
-            "sort_by" to "release_date.desc",
-            "include_video" to "false.desc",
-            "page" to "1",
-            "primary_release_date.lte" to "2013-08-30"))
-*/
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(object : SingleObserver<DiscoverMoviesModel>
