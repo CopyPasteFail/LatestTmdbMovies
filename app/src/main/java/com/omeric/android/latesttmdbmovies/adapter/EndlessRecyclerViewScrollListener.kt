@@ -1,11 +1,8 @@
 package com.omeric.android.latesttmdbmovies.adapter
 
-import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.StaggeredGridLayoutManager
 import android.util.Log
-import com.omeric.android.latesttmdbmovies.activity.MainActivity
 
 abstract class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutManager) : RecyclerView.OnScrollListener()
 {
@@ -49,9 +46,8 @@ abstract class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutMana
      */
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int)
     {
-        var lastVisibleItemPosition: Int
+        val lastVisibleItemPosition: Int = (mLayoutManager as LinearLayoutManager).findLastVisibleItemPosition()
         val totalItemCount = mLayoutManager.itemCount
-        lastVisibleItemPosition = (mLayoutManager as LinearLayoutManager).findLastVisibleItemPosition()
         Log.d(TAG, "::onScrolled: lastVisibleItemPosition = $lastVisibleItemPosition")
         Log.d(TAG, "::onScrolled: previousTotalItemCount = $previousTotalItemCount")
         Log.d(TAG, "::onScrolled: totalItemCount = $totalItemCount")
