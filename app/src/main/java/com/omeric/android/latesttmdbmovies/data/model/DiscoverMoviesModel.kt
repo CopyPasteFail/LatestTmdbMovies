@@ -19,5 +19,5 @@ class DiscoverMoviesModel
 
     @SerializedName("results")
     @Expose
-    var results: List<MovieModel>? = null
+    var results: ArrayList<MovieModel>? = null
 }

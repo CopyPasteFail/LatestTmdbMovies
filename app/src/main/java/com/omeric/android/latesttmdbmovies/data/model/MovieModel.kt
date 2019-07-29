@@ -51,21 +51,4 @@ class MovieModel
     @SerializedName("vote_count")
     @Expose
     var voteCount: Int? = null
-
-/*
-    @SerializedName("owner")
-    @Expose
-    var owner: Owner? = null
-
-
-    class Owner
-    {
-        @SerializedName("login")
-        @Expose
-        var login: String? = null
-        @SerializedName("avatar_url")
-        @Expose
-        var avatarUrl: String? = null
-    }
-    */
 }

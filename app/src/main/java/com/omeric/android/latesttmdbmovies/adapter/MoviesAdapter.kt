@@ -16,10 +16,8 @@ import com.omeric.android.latesttmdbmovies.activity.DetailsActivity
 import com.omeric.android.latesttmdbmovies.activity.MainActivity
 
 
-
-
 class MoviesAdapter(
-    private val movies: List<MovieModel>,
+    private val movies: ArrayList<MovieModel>,
     private val rowLayout: Int
 ) : RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>()
 {
@@ -53,10 +51,10 @@ class MoviesAdapter(
      */
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int)
     {
-        Log.d(TAG,"onBindViewHolder:")
+//        Log.d(TAG,"onBindViewHolder:")
         if (movies[position].posterPath != null)
         {
-            Log.d(TAG, "onBindViewHolder: posterUrl = ${MainActivity.BASE_URL_MOVIE_POSTER + movies[position].posterPath}")
+//            Log.d(TAG, "onBindViewHolder: posterUrl = ${MainActivity.BASE_URL_MOVIE_POSTER + movies[position].posterPath}")
             Picasso
                 .get()
                 .load(MainActivity.BASE_URL_MOVIE_POSTER + movies[position].posterPath)
@@ -65,10 +63,10 @@ class MoviesAdapter(
                 .into(holder.posterImage)
         }
         else {holder.posterImage.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)}
+
         holder.movieTitle.text = movies[position].originalTitle
         holder.releaseDate.text = movies[position].releaseDate
 
-/*
         holder.movieItemLayout.setOnClickListener {
             it.context.startActivity(Intent(it.context, DetailsActivity::class.java)
                 .putExtra(DetailsActivity.INTENT_MOVIE_HOMEPAGE_URL, movies[position].homePageUrl)
@@ -82,7 +80,6 @@ class MoviesAdapter(
                 .putExtra(DetailsActivity.INTENT_MOVIE_VOTE_COUNT, movies[position].voteCount)
             )
         }
-*/
     }
 
     override fun getItemCount(): Int

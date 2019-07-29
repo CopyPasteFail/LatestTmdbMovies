@@ -1,5 +1,6 @@
 package com.omeric.android.latesttmdbmovies.activity
 
+//TODO - add auto-complete search bar
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -22,7 +23,8 @@ import com.omeric.android.latesttmdbmovies.adapter.MoviesAdapter
 import com.omeric.android.latesttmdbmovies.data.model.DiscoverMoviesModel
 import java.text.SimpleDateFormat
 import java.util.*
-import com.omeric.android.latesttmdbmovies.adapter.EndlessRecyclerViewScrollListener2
+import com.omeric.android.latesttmdbmovies.adapter.EndlessRecyclerViewScrollListener
+import com.omeric.android.latesttmdbmovies.data.model.MovieModel
 
 
 class MainActivity : AppCompatActivity()
@@ -35,8 +37,9 @@ class MainActivity : AppCompatActivity()
         const val API_KEY = "1e0dcaa7e93980fb84e1d2430d01b887" //junk key
     }
 
-    //TODO - add auto-complete search bar
-    //TODO - add infinite scrolling
+//    private var movies: List<MovieModel>()
+    //init empty list
+    var movies = arrayListOf<MovieModel>()
 
     /**
      * [CompositeDisposable] is a convenient class for bundling up multiple Disposables,
@@ -45,20 +48,13 @@ class MainActivity : AppCompatActivity()
     private var compositeDisposable: CompositeDisposable? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
-    private var totalPages: Int = 0
+    private var totalPages = 0
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         Log.d(TAG, ":onCreate")
         setContentView(R.layout.activity_main)
-
-        // Trailing slash is needed
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL_API)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
 
         recyclerView = findViewById(R.id.recycler_view_main_activity)
         /**
@@ -69,75 +65,21 @@ class MainActivity : AppCompatActivity()
         val linearLayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = linearLayoutManager
         progressBar = findViewById(R.id.progressbar_main_activity)
-//        ListView lvItems = (ListView) findViewById(R.id.lvItems);
+        loadNextDataFromApi(1)
 
-        recyclerView.addOnScrollListener(object : EndlessRecyclerViewScrollListener2(linearLayoutManager)
+        recyclerView.addOnScrollListener(object : EndlessRecyclerViewScrollListener(linearLayoutManager)
         {
-            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView)
+            override fun onLoadMore(page: Int, recyclerView: RecyclerView)
             {
+                Log.d(TAG, ":onCreate::recyclerView.addOnScrollListener::onLoadMore")
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to your AdapterView
                 if ((page + 1) <= totalPages)
                 {
-                    loadNextDataFromApi(page + 1);
+                    loadNextDataFromApi(page + 1)
                 }
             }
         })
-
-/*
-        // Attach the listener to the AdapterView onCreate
-        recyclerView.setOnScrollListener(new EndlessScrollListener() {
-            @Override
-            public boolean onLoadMore(int page, int totalItemsCount) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to your AdapterView
-                loadNextDataFromApi(page);
-                // or loadNextDataFromApi(totalItemsCount);
-                return true; // ONLY if more data is actually being loaded; false otherwise.
-            }
-        });
-*/
-
-        // create an instance of the TmdbApiService
-        val tmdbApiService = retrofit.create(TmdbApiService::class.java)
-        val time = Calendar.getInstance().time
-        Log.d(TAG, ":onCreate:: Current time => $time")
-
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-        val formattedDate = simpleDateFormat.format(time)
-        Log.d(TAG, ":onCreate:: formattedDate = $formattedDate")
-
-        //example: https://api.themoviedb.org/3/discover/movie?api_key=1e0dcaa7e93980fb84e1d2430d01b887&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&primary_release_date.lte=2013-08-30
-        tmdbApiService.getLatestMovies(API_KEY, "en-US", "release_date.desc", "false",
-            "false", 1, formattedDate)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : SingleObserver<DiscoverMoviesModel>
-            {
-                override fun onSubscribe(disposable: Disposable)
-                {
-                    Log.d(TAG, "moviesSingle::onSubscribe")
-                    add(disposable)
-                    showProgressBar()
-                }
-
-                override fun onSuccess(movies : DiscoverMoviesModel)
-                {
-                    // data is ready and we can update the UI
-                    Log.d(TAG, "moviesSingle::onSuccess: Number of movies received:  ${movies.totalResults}")
-                    // Hooking up the Adapter and RecyclerView
-                    recyclerView.adapter = MoviesAdapter(movies.results!!, R.layout.list_item_movie)
-                    hideProgressBar()
-                }
-
-                override fun onError(e: Throwable)
-                {
-                    // oops, we best show some error message
-                    Log.e(TAG, "moviesSingle::onError: $e")
-                    Toast.makeText(this@MainActivity, "Error connecting to TMDb", Toast.LENGTH_SHORT).show()
-                    hideProgressBar()
-                }
-            })
     }
 
     override fun onDestroy()
@@ -193,14 +135,79 @@ class MainActivity : AppCompatActivity()
         recyclerView.visibility = View.INVISIBLE
     }
 
-    // Append the next page of data into the adapter
-    // This method probably sends out a network request and appends new data items to your adapter.
-    fun loadNextDataFromApi(offset: Int )
+    /**
+     * This method sends out a network request and appends new data items to the adapter, by:
+     * 1. Sending an API request including an offset value (i.e `page`) as a query parameter.
+     * 2. Deserializing and constructing new model objects from the API response
+     * 3. Appending the new data objects to the existing set of items inside the array of items
+     * 4. Notifying the adapter of the new items made with `notifyDataSetChanged()`
+     */
+    fun loadNextDataFromApi(page: Int)
     {
-        // Send an API request to retrieve appropriate paginated data
-        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
-        //  --> Deserialize and construct new model objects from the API response
-        //  --> Append the new data objects to the existing set of items inside the array of items
-        //  --> Notify the adapter of the new items made with `notifyDataSetChanged()`
+        // TODO - what happens when the date changes while the user is using the app?
+        //get current date and
+        val time = Calendar.getInstance().time
+        Log.d(TAG, ":loadNextDataFromApi:: Current time => $time")
+        //convert to the format yyyy-MM-dd
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val formattedDate = simpleDateFormat.format(time)
+        Log.d(TAG, ":loadNextDataFromApi:: formattedDate = $formattedDate")
+
+        // Trailing slash is needed
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL_API)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
+
+        // create an instance of the TmdbApiService
+        val tmdbApiService = retrofit.create(TmdbApiService::class.java)
+        //example: https://api.themoviedb.org/3/discover/movie?api_key=1e0dcaa7e93980fb84e1d2430d01b887&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&primary_release_date.lte=2013-08-30
+        tmdbApiService.getLatestMovies(API_KEY, "en-US", "release_date.desc", "false",
+            "false", page, formattedDate)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : SingleObserver<DiscoverMoviesModel>
+            {
+                override fun onSubscribe(disposable: Disposable)
+                {
+                    Log.d(TAG, " tmdbApiService.getLatestMovies::onSubscribe")
+                    add(disposable)
+                    showProgressBar()
+                }
+
+                // data is ready and we can update the UI
+                override fun onSuccess(discoverMoviesModel : DiscoverMoviesModel)
+                {
+                    if (page == 1) {
+                        Log.d(TAG, "tmdbApiService.getLatestMovies::onSuccess: Total movies: #${discoverMoviesModel.totalResults}")
+                        Log.d(TAG, "tmdbApiService.getLatestMovies::onSuccess: Total pages: #${discoverMoviesModel.totalPages}")
+                        Log.d(TAG, "tmdbApiService.getLatestMovies::onSuccess: page #${discoverMoviesModel.page} loaded successfully")
+                        totalPages = discoverMoviesModel.totalPages!!
+
+                        movies = discoverMoviesModel.results!!
+
+                        // Hooking up the Adapter and RecyclerView
+                        recyclerView.adapter = MoviesAdapter(movies, R.layout.list_item_movie)
+                        hideProgressBar()
+                    }
+                    else
+                    {
+                        Log.d(TAG, "tmdbApiService.getLatestMovies::onSuccess: page #${discoverMoviesModel.page} loaded successfully")
+                        movies.addAll(discoverMoviesModel.results!!)
+                        recyclerView.adapter!!.notifyDataSetChanged()
+
+                        hideProgressBar()
+                    }
+                }
+
+                override fun onError(e: Throwable)
+                {
+                    // oops, we best show some error message
+                    Log.e(TAG, " tmdbApiService.getLatestMovies::onError: $e")
+                    Toast.makeText(this@MainActivity, "Error connecting to TMDb", Toast.LENGTH_SHORT).show()
+                    hideProgressBar()
+                }
+            })
     }
 }
