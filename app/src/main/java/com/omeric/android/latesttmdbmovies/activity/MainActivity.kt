@@ -22,6 +22,7 @@ import com.omeric.android.latesttmdbmovies.adapter.MoviesAdapter
 import com.omeric.android.latesttmdbmovies.data.model.DiscoverMoviesModel
 import java.text.SimpleDateFormat
 import java.util.*
+import com.omeric.android.latesttmdbmovies.adapter.EndlessRecyclerViewScrollListener2
 
 
 class MainActivity : AppCompatActivity()
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity()
     private var compositeDisposable: CompositeDisposable? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
+    private var totalPages: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -57,10 +59,44 @@ class MainActivity : AppCompatActivity()
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
+
         recyclerView = findViewById(R.id.recycler_view_main_activity)
+        /**
+         * RecyclerView can perform several optimizations if it can know in advance that changes in adapter
+         * content cannot change the size (dimensions) of the RecyclerView itself
+         */
         recyclerView.setHasFixedSize(true)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        val linearLayoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = linearLayoutManager
         progressBar = findViewById(R.id.progressbar_main_activity)
+//        ListView lvItems = (ListView) findViewById(R.id.lvItems);
+
+        recyclerView.addOnScrollListener(object : EndlessRecyclerViewScrollListener2(linearLayoutManager)
+        {
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView)
+            {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to your AdapterView
+                if ((page + 1) <= totalPages)
+                {
+                    loadNextDataFromApi(page + 1);
+                }
+            }
+        })
+
+/*
+        // Attach the listener to the AdapterView onCreate
+        recyclerView.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to your AdapterView
+                loadNextDataFromApi(page);
+                // or loadNextDataFromApi(totalItemsCount);
+                return true; // ONLY if more data is actually being loaded; false otherwise.
+            }
+        });
+*/
 
         // create an instance of the TmdbApiService
         val tmdbApiService = retrofit.create(TmdbApiService::class.java)
@@ -89,6 +125,7 @@ class MainActivity : AppCompatActivity()
                 {
                     // data is ready and we can update the UI
                     Log.d(TAG, "moviesSingle::onSuccess: Number of movies received:  ${movies.totalResults}")
+                    // Hooking up the Adapter and RecyclerView
                     recyclerView.adapter = MoviesAdapter(movies.results!!, R.layout.list_item_movie)
                     hideProgressBar()
                 }
@@ -154,5 +191,16 @@ class MainActivity : AppCompatActivity()
         Log.d(TAG, "::hideProgressBar:")
         progressBar.visibility = View.VISIBLE
         recyclerView.visibility = View.INVISIBLE
+    }
+
+    // Append the next page of data into the adapter
+    // This method probably sends out a network request and appends new data items to your adapter.
+    fun loadNextDataFromApi(offset: Int )
+    {
+        // Send an API request to retrieve appropriate paginated data
+        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
+        //  --> Deserialize and construct new model objects from the API response
+        //  --> Append the new data objects to the existing set of items inside the array of items
+        //  --> Notify the adapter of the new items made with `notifyDataSetChanged()`
     }
 }

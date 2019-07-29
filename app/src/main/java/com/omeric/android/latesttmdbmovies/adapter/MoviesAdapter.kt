@@ -1,6 +1,5 @@
 package com.omeric.android.latesttmdbmovies.adapter
 
-import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -15,7 +14,8 @@ import com.squareup.picasso.Picasso
 import android.content.Intent
 import com.omeric.android.latesttmdbmovies.activity.DetailsActivity
 import com.omeric.android.latesttmdbmovies.activity.MainActivity
-import com.squareup.picasso.Callback
+
+
 
 
 class MoviesAdapter(
@@ -30,6 +30,7 @@ class MoviesAdapter(
 
     /**
      * A [RecyclerView.ViewHolder] inner class where we get reference to the views in the layout using their ID
+     * using the [RecyclerView.ViewHolder] pattern to make an object that holds all view references
      */
     class MovieViewHolder(view: View) : RecyclerView.ViewHolder(view)
     {
@@ -48,6 +49,7 @@ class MoviesAdapter(
 
     /**
      * Inside the [onBindViewHolder] we check the type of ViewHolder instance and populate the row accordingly
+     * Create the view holder for view items, connect the data source of the RecyclerView
      */
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int)
     {
@@ -66,6 +68,7 @@ class MoviesAdapter(
         holder.movieTitle.text = movies[position].originalTitle
         holder.releaseDate.text = movies[position].releaseDate
 
+/*
         holder.movieItemLayout.setOnClickListener {
             it.context.startActivity(Intent(it.context, DetailsActivity::class.java)
                 .putExtra(DetailsActivity.INTENT_MOVIE_HOMEPAGE_URL, movies[position].homePageUrl)
@@ -79,6 +82,7 @@ class MoviesAdapter(
                 .putExtra(DetailsActivity.INTENT_MOVIE_VOTE_COUNT, movies[position].voteCount)
             )
         }
+*/
     }
 
     override fun getItemCount(): Int
