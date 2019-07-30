@@ -1,9 +1,8 @@
 package com.omeric.android.latesttmdbmovies.activity
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
-import android.util.Log
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,7 +16,6 @@ class DetailsActivity : AppCompatActivity()
 {
     companion object
     {
-        private val TAG = "gipsy:" + this::class.java.name
         const val INTENT_MOVIE_HOMEPAGE_URL = "MOVIE_HOMEPAGE_URL"
         const val INTENT_MOVIE_ID = "MOVIE_ID"
         const val INTENT_MOVIE_TITLE = "MOVIE_TITLE"
@@ -35,7 +33,6 @@ class DetailsActivity : AppCompatActivity()
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
-        Log.d(TAG, ":onCreate")
 
         val movieTitle: TextView = findViewById(R.id.TextVw_movie_details_title)
         val movieOverview: TextView = findViewById(R.id.TextVw_movie_details_overview)
@@ -58,11 +55,6 @@ class DetailsActivity : AppCompatActivity()
         releaseDate.text = intent.getStringExtra(INTENT_MOVIE_RELEASE_DATE)
         voteAverage.text = (intent.getFloatExtra(INTENT_MOVIE_VOTE_AVERAGE, 0.0f)).toString()
         voteCount.text = (intent.getIntExtra(INTENT_MOVIE_VOTE_COUNT, 0)).toString()
-
-        Log.d(TAG, ":onCreate: popularity = ${(intent.getFloatExtra(INTENT_MOVIE_POPULARITY, 0.0f))}/")
-        Log.d(TAG, ":onCreate: voteCount = ${(intent.getIntExtra(INTENT_MOVIE_VOTE_COUNT, 0))}/")
-        Log.d(TAG, ":onCreate: voteAverage = ${(intent.getFloatExtra(INTENT_MOVIE_VOTE_AVERAGE, 0.0f))}/")
-        Log.d(TAG, "onBindViewHolder: posterUrl = ${MainActivity.BASE_URL_MOVIE_POSTER + posterPath}")
 
         if (posterPath != null)
         {

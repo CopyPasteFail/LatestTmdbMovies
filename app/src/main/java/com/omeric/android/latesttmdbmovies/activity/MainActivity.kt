@@ -1,37 +1,34 @@
 package com.omeric.android.latesttmdbmovies.activity
 
-//TODO - add auto-complete search bar
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import android.util.Log
-import com.omeric.android.latesttmdbmovies.data.remote.TmdbApiService
-import io.reactivex.disposables.Disposable
-import io.reactivex.SingleObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import com.omeric.android.latesttmdbmovies.R
+import com.omeric.android.latesttmdbmovies.adapter.EndlessRecyclerViewScrollListener
 import com.omeric.android.latesttmdbmovies.adapter.MoviesAdapter
 import com.omeric.android.latesttmdbmovies.data.model.DiscoverMoviesModel
+import com.omeric.android.latesttmdbmovies.data.model.MovieModel
+import com.omeric.android.latesttmdbmovies.data.remote.TmdbApiService
+import io.reactivex.SingleObserver
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
-import com.omeric.android.latesttmdbmovies.adapter.EndlessRecyclerViewScrollListener
-import com.omeric.android.latesttmdbmovies.data.model.MovieModel
 
 
 class MainActivity : AppCompatActivity()
 {
     companion object
     {
-        private val TAG = "gipsy:" + this::class.java.name
         const val BASE_URL_API = "https://api.themoviedb.org/3/"
         const val BASE_URL_MOVIE_POSTER = "https://image.tmdb.org/t/p/w185"
         const val API_KEY = "1e0dcaa7e93980fb84e1d2430d01b887" //junk key
@@ -52,7 +49,6 @@ class MainActivity : AppCompatActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, ":onCreate")
         setContentView(R.layout.activity_main)
 
         recyclerView = findViewById(R.id.recycler_view_main_activity)
@@ -70,7 +66,6 @@ class MainActivity : AppCompatActivity()
         {
             override fun onLoadMore(page: Int, recyclerView: RecyclerView)
             {
-                Log.d(TAG, ":onCreate::recyclerView.addOnScrollListener::onLoadMore")
                 // New data needs to be appended to the list
                 if ((page + 1) <= totalPages)
                 {
@@ -82,7 +77,6 @@ class MainActivity : AppCompatActivity()
 
     override fun onDestroy()
     {
-        Log.d(TAG, ":onDestroy")
         /** dispose all [Disposable]s */
         if (compositeDisposable?.isDisposed == false)
         {
@@ -105,7 +99,6 @@ class MainActivity : AppCompatActivity()
      */
     fun add(disposable: Disposable)
     {
-        Log.d(TAG, ":add")
         if (compositeDisposable == null)
         {
             compositeDisposable = CompositeDisposable()
@@ -118,7 +111,6 @@ class MainActivity : AppCompatActivity()
      */
     private fun hideProgressBar()
     {
-        Log.d(TAG, "::hideProgressBar:")
         progressBar.visibility = View.INVISIBLE
         recyclerView.visibility = View.VISIBLE
     }
@@ -128,7 +120,6 @@ class MainActivity : AppCompatActivity()
      */
     private fun showProgressBar()
     {
-        Log.d(TAG, "::hideProgressBar:")
         progressBar.visibility = View.VISIBLE
         recyclerView.visibility = View.INVISIBLE
     }
@@ -144,14 +135,11 @@ class MainActivity : AppCompatActivity()
      */
     fun loadNextDataFromApi(page: Int)
     {
-        // TODO - what happens when the date changes while the user is using the app?
         //get current date and
         val time = Calendar.getInstance().time
-        Log.d(TAG, ":loadNextDataFromApi:: Current time => $time")
         //convert to the format yyyy-MM-dd
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
         val formattedDate = simpleDateFormat.format(time)
-        Log.d(TAG, ":loadNextDataFromApi:: formattedDate = $formattedDate")
 
         // Trailing slash is needed
         val retrofit = Retrofit.Builder()
@@ -171,7 +159,6 @@ class MainActivity : AppCompatActivity()
             {
                 override fun onSubscribe(disposable: Disposable)
                 {
-                    Log.d(TAG, " tmdbApiService.getLatestMovies::onSubscribe")
                     add(disposable)
                     showProgressBar()
                 }
@@ -181,9 +168,6 @@ class MainActivity : AppCompatActivity()
                 {
                     // for the first page we connect the adapter and the movies list
                     if (page == 1) {
-                        Log.d(TAG, "tmdbApiService.getLatestMovies::onSuccess: Total movies: #${discoverMoviesModel.totalResults}")
-                        Log.d(TAG, "tmdbApiService.getLatestMovies::onSuccess: Total pages: #${discoverMoviesModel.totalPages}")
-                        Log.d(TAG, "tmdbApiService.getLatestMovies::onSuccess: page #${discoverMoviesModel.page} loaded successfully")
                         totalPages = discoverMoviesModel.totalPages!!
 
                         movies = discoverMoviesModel.results!!
@@ -195,7 +179,6 @@ class MainActivity : AppCompatActivity()
                     else
                     {
                         // for any further pages, we append the data and notify the adapter on the change
-                        Log.d(TAG, "tmdbApiService.getLatestMovies::onSuccess: page #${discoverMoviesModel.page} loaded successfully")
                         movies.addAll(discoverMoviesModel.results!!)
                         recyclerView.adapter!!.notifyDataSetChanged()
 
@@ -206,7 +189,6 @@ class MainActivity : AppCompatActivity()
                 override fun onError(e: Throwable)
                 {
                     // oops, we best show some error message
-                    Log.e(TAG, " tmdbApiService.getLatestMovies::onError: $e")
                     Toast.makeText(this@MainActivity, "Error connecting to TMDb", Toast.LENGTH_SHORT).show()
                     hideProgressBar()
                 }

@@ -2,7 +2,6 @@ package com.omeric.android.latesttmdbmovies.adapter
 
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,11 +20,6 @@ class MoviesAdapter(
     private val rowLayout: Int
 ) : RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>()
 {
-    companion object
-    {
-        private val TAG = "gipsy:" + this::class.java.name
-    }
-
     /**
      * A [RecyclerView.ViewHolder] inner class where we get reference to the views in the layout using their ID
      * using the [RecyclerView.ViewHolder] pattern to make an object that holds all view references
@@ -40,7 +34,6 @@ class MoviesAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder
     {
-        Log.d(TAG,"onCreateViewHolder:")
         val view = LayoutInflater.from(parent.context).inflate(rowLayout, parent, false)
         return MovieViewHolder(view)
     }
@@ -51,10 +44,8 @@ class MoviesAdapter(
      */
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int)
     {
-//        Log.d(TAG,"onBindViewHolder:")
         if (movies[position].posterPath != null)
         {
-//            Log.d(TAG, "onBindViewHolder: posterUrl = ${MainActivity.BASE_URL_MOVIE_POSTER + movies[position].posterPath}")
             Picasso
                 .get()
                 .load(MainActivity.BASE_URL_MOVIE_POSTER + movies[position].posterPath)
