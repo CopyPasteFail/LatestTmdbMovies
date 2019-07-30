@@ -1,4 +1,4 @@
-An android app that shows latest movies from TMDb with infinite scrolling
+An android app that shows latest the movies from TMDb with infinite scrolling
 
 # Introduction
 This Android App that has 2 Screens/Activities: 
