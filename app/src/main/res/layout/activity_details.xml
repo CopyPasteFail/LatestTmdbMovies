@@ -95,7 +95,7 @@
             android:layout_marginStart="2dp"/>
 
         <ImageView
-            android:id="@+id/fork_image"
+            android:id="@+id/ImgVw_movie_details_vote_average"
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:src="@drawable/ic_star"
@@ -111,7 +111,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="9999"
-            app:layout_constraintStart_toEndOf="@+id/fork_image"
+            app:layout_constraintStart_toEndOf="@+id/ImgVw_movie_details_vote_average"
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/TextVw_movie_details_vote_count"
             android:layout_marginStart="2dp"/>
@@ -129,22 +129,25 @@
             tools:ignore="ContentDescription"/>
 
         <TextView
-            android:id="@+id/TextVw_movie_homepage_url"
-            android:layout_width="334dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@+id/ImgVw_movie_details_link"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/TextVw_movie_details_overview"
-            tools:text="https://github.com/googlesamples/android-architecture"/>
+                android:id="@+id/TextVw_movie_homepage_url"
+                android:layout_width="334dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/ImgVw_movie_details_link"
+                android:autoLink="web"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/TextVw_movie_details_overview"
+                tools:text="https://github.com/googlesamples/android-architecture"/>
 
         <TextView
             android:id="@+id/TextVw_movie_details_release_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="2013-08-30"
-            app:layout_constraintTop_toBottomOf="@+id/fork_image"
-            app:layout_constraintStart_toStartOf="@+id/fork_image"
+            app:layout_constraintTop_toBottomOf="@+id/ImgVw_movie_details_vote_average"
+            app:layout_constraintStart_toStartOf="@+id/ImgVw_movie_details_vote_average"
             android:layout_marginTop="8dp"/>
 
     </android.support.constraint.ConstraintLayout>

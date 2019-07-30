@@ -37,8 +37,7 @@ class MainActivity : AppCompatActivity()
         const val API_KEY = "1e0dcaa7e93980fb84e1d2430d01b887" //junk key
     }
 
-//    private var movies: List<MovieModel>()
-    //init empty list
+    //init movies list
     var movies = arrayListOf<MovieModel>()
 
     /**
@@ -72,8 +71,7 @@ class MainActivity : AppCompatActivity()
             override fun onLoadMore(page: Int, recyclerView: RecyclerView)
             {
                 Log.d(TAG, ":onCreate::recyclerView.addOnScrollListener::onLoadMore")
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to your AdapterView
+                // New data needs to be appended to the list
                 if ((page + 1) <= totalPages)
                 {
                     loadNextDataFromApi(page + 1)
@@ -141,6 +139,8 @@ class MainActivity : AppCompatActivity()
      * 2. Deserializing and constructing new model objects from the API response
      * 3. Appending the new data objects to the existing set of items inside the array of items
      * 4. Notifying the adapter of the new items made with `notifyDataSetChanged()`
+     *
+     * @param page The page number to be loaded
      */
     fun loadNextDataFromApi(page: Int)
     {
@@ -179,6 +179,7 @@ class MainActivity : AppCompatActivity()
                 // data is ready and we can update the UI
                 override fun onSuccess(discoverMoviesModel : DiscoverMoviesModel)
                 {
+                    // for the first page we connect the adapter and the movies list
                     if (page == 1) {
                         Log.d(TAG, "tmdbApiService.getLatestMovies::onSuccess: Total movies: #${discoverMoviesModel.totalResults}")
                         Log.d(TAG, "tmdbApiService.getLatestMovies::onSuccess: Total pages: #${discoverMoviesModel.totalPages}")
@@ -187,12 +188,13 @@ class MainActivity : AppCompatActivity()
 
                         movies = discoverMoviesModel.results!!
 
-                        // Hooking up the Adapter and RecyclerView
+                        /** Hooking up [MoviesAdapter] and [recyclerView] */
                         recyclerView.adapter = MoviesAdapter(movies, R.layout.list_item_movie)
                         hideProgressBar()
                     }
                     else
                     {
+                        // for any further pages, we append the data and notify the adapter on the change
                         Log.d(TAG, "tmdbApiService.getLatestMovies::onSuccess: page #${discoverMoviesModel.page} loaded successfully")
                         movies.addAll(discoverMoviesModel.results!!)
                         recyclerView.adapter!!.notifyDataSetChanged()
