@@ -101,9 +101,9 @@ abstract class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutMana
          * the visibleThreshold and need to reload more data.
          * If we do need to reload some more data, we execute onLoadMore to fetch the data.
          */
-        if (!loading && lastVisibleItemPosition + visibleThreshold > totalItemCount)
+        if (!loading && (lastVisibleItemPosition + visibleThreshold > totalItemCount))
         {
-            Log.d(TAG, "::onScrolled: (!loading && lastVisibleItemPosition + visibleThreshold > totalItemCount) = true")
+            Log.d(TAG, "::onScrolled: (!loading && (lastVisibleItemPosition + visibleThreshold > totalItemCount)) = true")
             currentPage++
             onLoadMore(currentPage, recyclerView)
             loading = true

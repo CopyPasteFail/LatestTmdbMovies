@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity()
             override fun onLoadMore(page: Int, recyclerView: RecyclerView)
             {
                 Log.d(TAG, ":onCreate::recyclerView.addOnScrollListener::onLoadMore")
+                Log.d(TAG, ":onCreate::recyclerView.addOnScrollListener::onLoadMore: page+1 = ${page+1}")
                 // New data needs to be appended to the list
                 if ((page + 1) <= totalPages)
                 {
